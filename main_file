@@ -1,0 +1,2276 @@
+#include<windows.h>
+#include <GL/glut.h>
+#include <stdlib.h>
+#include <math.h>
+#include <dos.h>
+#include<stdio.h>
+
+#define PI 3.1416
+
+static float cloudRight=0.0;
+static float cloudLeft=0.0;
+static float shipLeft=0.0;
+static float x1=0,x2=0,x3=0,x4=0,x5=0,x6=0,x7=0;
+static float couple_move_x=0, couple_move_y=0;
+static float couple_on_ship_x=0;
+static int couple_x=0;  /// 1 hole couple on the ship, 0 hole road e
+static float  suta_x=0, suta_y=0;
+static float mey_x=0;
+static float mey_balthi_x=0;
+
+
+void circle(float radius_x, float radius_y)
+{
+	int i = 0;
+	float angle1 = 0.0;
+
+	glBegin(GL_POLYGON);
+
+		for(i = 0; i < 100; i++)
+		{
+			angle1 = 2 * PI * i / 100;
+			glVertex3f (cos(angle1) * radius_x, sin(angle1) * radius_y, 0);
+		}
+
+	glEnd();
+}
+
+void circle_hole(float radius_x, float radius_y)
+{
+	int i = 0;
+	float angle1 = 0.0;
+
+	glBegin(GL_LINES);
+
+		for(i = 0; i < 1000; i++)
+		{
+			angle1 = 2 * PI * i / 1000;
+			glVertex3f (cos(angle1) * radius_x, sin(angle1) * radius_y, 0);
+		}
+
+	glEnd();
+}
+
+
+
+void hill(float radius_x, float radius_y)
+{
+	int i = 0;
+	float angle1 = 0.0;
+
+	glBegin(GL_POLYGON);
+
+		for(i = 0; i < 51; i++)
+		{
+			angle1 = 2 * PI * i / 100;
+			glVertex3f (cos(angle1) * radius_x, sin(angle1) * radius_y, 0);
+		}
+
+	glEnd();
+}
+
+void sky()
+{
+    glPushMatrix();
+        glColor3f(0.53f,0.807f,0.98f);
+        glBegin(GL_QUADS);
+            glVertex2d(-20,10);
+            glVertex2d(20,10);
+            glVertex2d(20,0.2);
+            glVertex2d(-20,0.2);
+        glEnd();
+    glPopMatrix();
+
+}
+
+
+void river(){
+
+    glPushMatrix();
+          glPushMatrix();    /// border
+            glBegin(GL_QUADS);
+                glColor3f(0.55,0.27,0.0745);
+                glVertex2d(-20,0.2);
+                glVertex2d(20,0.2);
+                glVertex2d(20,0);
+                glVertex2d(-20,0);
+            glEnd();
+          glPopMatrix();
+
+        glPushMatrix();
+
+            glBegin(GL_POLYGON);
+            glColor3f(0.12,0.56,0.99);
+                glVertex2d(-20,0);
+            glColor3f(0.06,0.30,0.54);
+                glVertex2d(-10,0);
+            glColor3f(0.09,0.45,0.80);
+                glVertex2d(20,0);
+            glColor3f(0.12,0.56,0.99);
+                glVertex2d(20,-10);
+            glColor3f(0,0,0.93);
+                glVertex2d(-20,-10);
+            glEnd();
+
+        glPopMatrix();
+
+    glPopMatrix();
+
+}
+
+
+void sun()
+{
+    glPushMatrix();
+        glTranslated(-18,8,0);
+        glScaled(0.5,0.5,0);
+        glColor3f(1,0.843,0);
+        circle(2.5,2.5);
+    glPopMatrix();
+}
+
+
+void cloud()
+{
+    glColor3f(0.94,0.94,0.94);
+    glPushMatrix();
+        glPushMatrix(); ///1
+            glTranslated(0.2,4,1);
+            circle(0.95,0.5);
+        glPopMatrix();
+
+
+        glPushMatrix();///2
+            glTranslated(1.5,4.4,1);
+            circle(1,0.5);
+        glPopMatrix();
+
+
+        glPushMatrix();///3
+            glTranslated(2.6,4,1);
+            circle(0.95,0.5);
+        glPopMatrix();
+
+
+         glPushMatrix();///4
+            glTranslated(2,3.5,1);
+            circle(1,0.65);
+        glPopMatrix();
+
+
+        glPushMatrix();///5
+            glTranslated(0.8,3.5,1);
+            circle(1,0.65);
+        glPopMatrix();
+
+    glPopMatrix();
+
+}
+
+
+void hill_trees()
+{
+glTranslated(-17,0,0);
+glPushMatrix();
+    glPushMatrix();
+    glColor3f(0.54,0.39,0.03);       /// dandiii
+    glBegin(GL_POLYGON);
+        glVertex2d(0,0);
+        glVertex2d(0.5,0);
+        glVertex2d(0.5,3);
+        glVertex2d(0,3);
+    glEnd();
+    glPopMatrix();
+
+    glPushMatrix();
+    glColor3f(0,0.54,0.23);            /// kata 1 middle
+    glBegin(GL_TRIANGLES);
+        glVertex2d(0,3);
+        glVertex2d(0.5,3);
+        glVertex2d(0.25,6);
+    glEnd();
+    glPopMatrix();
+
+/// right side kata
+
+    glPushMatrix();
+    glRotated(-20,0,0,1);
+    glTranslated(-1,-.5,0);
+    glColor3f(0,0.54,0.23);            /// kata 2 right
+    glBegin(GL_TRIANGLES);
+        glVertex2d(0,3);
+        glVertex2d(0.5,3);
+        glVertex2d(0.25,6);
+    glEnd();
+    glPopMatrix();
+
+    glPushMatrix();
+    glRotated(-30,0,0,1);
+    glTranslated(-1.2,-.5,0);
+    glColor3f(0,0.54,0.23);            /// kata 3 right
+    glBegin(GL_TRIANGLES);
+        glVertex2d(0,3);
+        glVertex2d(0.5,3);
+        glVertex2d(0.25,6);
+    glEnd();
+    glPopMatrix();
+
+
+    glPushMatrix();
+    glRotated(-42,0,0,1);
+    glTranslated(-1.7,-.5,0);
+    glColor3f(0,0.54,0.23);            /// kata 4 right
+    glBegin(GL_TRIANGLES);
+        glVertex2d(0,3);
+        glVertex2d(0.5,3);
+        glVertex2d(0.25,7);
+    glEnd();
+    glPopMatrix();
+
+
+    glPushMatrix();
+    glTranslated(-2.5,1,0);
+    glRotated(-60,0,0,1);
+    glColor3f(0,0.54,0.23);            /// kata 5 right
+    glBegin(GL_TRIANGLES);
+        glVertex2d(0,3);
+        glVertex2d(0.5,3);
+        glVertex2d(0.25,7);
+    glEnd();
+    glPopMatrix();
+
+
+///left side kata
+
+glPushMatrix();
+    glTranslated(1,-.5,0);
+    glRotated(20,0,0,1);
+    glColor3f(0,0.54,0.23);            /// kata 2 left
+    glBegin(GL_TRIANGLES);
+        glVertex2d(0,3);
+        glVertex2d(0.5,3);
+        glVertex2d(0.25,6);
+    glEnd();
+    glPopMatrix();
+
+
+    glPushMatrix();
+    glTranslated(1.5,-.5,0);
+    glRotated(30,0,0,1);
+    glColor3f(0,0.54,0.23);            /// kata 3 left
+    glBegin(GL_TRIANGLES);
+        glVertex2d(0,3);
+        glVertex2d(0.5,3);
+        glVertex2d(0.25,7);
+    glEnd();
+    glPopMatrix();
+
+
+    glPushMatrix();
+    glTranslated(2,-.3,0);
+    glRotated(42,0,0,1);
+    glColor3f(0,0.54,0.23);            /// kata 4 left
+    glBegin(GL_TRIANGLES);
+        glVertex2d(0,3);
+        glVertex2d(0.5,3);
+        glVertex2d(0.25,7);
+    glEnd();
+    glPopMatrix();
+
+
+     glPushMatrix();
+    glTranslated(2.5,0.5,0);
+    glRotated(60,0,0,1);
+    glColor3f(0,0.54,0.23);            /// kata 5 left
+    glBegin(GL_TRIANGLES);
+        glVertex2d(0,3);
+        glVertex2d(0.5,3);
+        glVertex2d(0.25,7);
+    glEnd();
+    glPopMatrix();
+glPopMatrix();
+
+}
+
+void fishing_side()
+{
+    glColor3f(0.27,0.54,0);
+    glBegin(GL_POLYGON);
+        glVertex2d(10,0);
+        glVertex2d(20,0);
+        glVertex2d(20,-5);
+    glEnd();
+}
+
+
+void ship_with_man()
+{
+    glColor3f(1,0,0); ///main part
+    glBegin(GL_POLYGON);
+        glVertex2d(-2,0);
+        glVertex2d(4,0);
+        glVertex2d(5,1);
+        glVertex2d(-3,1);
+    glEnd();
+
+    glColor3f(0.54,0.21,0.15); /// lower part
+    glBegin(GL_POLYGON);
+        glVertex2d(1,1);
+        glVertex2d(4,1);
+        glVertex2d(4,1.5);
+        glVertex2d(1,1.5);
+    glEnd();
+
+    glColor3f(0.80,0.31,0.22); /// upper part
+    glBegin(GL_POLYGON);
+        glVertex2d(4,1.5);
+        glVertex2d(4,2);
+        glVertex2d(2,2);
+        glVertex2d(2,1.5);
+    glEnd();
+
+    glColor3f(0.12,0.12,0.12); /// dandii
+    glBegin(GL_POLYGON);
+        glVertex2d(4.25,1);
+        glVertex2d(4.50,1);
+        glVertex2d(4.50,3);
+        glVertex2d(4.25,3);
+    glEnd();
+
+    glColor3f(0.12,0.12,0.12); /// dhuya_1
+    glBegin(GL_POLYGON);
+        glVertex2d(4.25,3.2);
+        glVertex2d(4.50,3.2);
+        glVertex2d(4.50,3.4);
+        glVertex2d(4.25,3.4);
+    glEnd();
+
+    glColor3f(0.12,0.12,0.12); /// dhuya_2
+    glBegin(GL_POLYGON);
+        glVertex2d(4.50,3.5);
+        glVertex2d(4.75,3.5);
+        glVertex2d(4.75,3.7);
+        glVertex2d(4.50,3.7);
+    glEnd();
+
+
+    glColor3f(0.12,0.12,0.12); /// dhuya_3
+    glBegin(GL_POLYGON);
+        glVertex2d(4.75,3.8);
+        glVertex2d(5.0,3.8);
+        glVertex2d(5.0,4.0);
+        glVertex2d(4.75,4.0);
+    glEnd();
+
+///draw ship man
+glPushMatrix();
+    glPushMatrix(); ///body
+        glBegin(GL_QUADS);
+        glColor3f(0.980, 0.329, 0.058);
+            glVertex2d(-1,1);
+            glVertex2d(0,1);
+            glVertex2d(0,2);
+            glVertex2d(-1,2);
+        glEnd();
+    glPopMatrix();
+
+
+     glPushMatrix();  ///button_1
+        glTranslatef(-0.5,1.6,0);
+        glColor3f(0,0,0);
+        circle(0.05,0.05);
+    glPopMatrix();
+
+    glPushMatrix();  ///button_2
+        glTranslatef(-0.5,1.3,0);
+        glColor3f(0,0,0);
+        circle(0.05,0.05);
+    glPopMatrix();
+
+    glPushMatrix();   ///throat
+       glColor3f(0.937, 0.733, 0.203);
+        glTranslatef(-0.25,1.3,0);
+        glScalef(.5,.5,0);
+        glBegin(GL_QUADS);
+            glVertex2d(-1,1);
+            glVertex2d(0,1);
+            glVertex2d(0,2);
+            glVertex2d(-1,2);
+        glEnd();
+    glPopMatrix();
+
+    glPushMatrix();  ///face
+        glTranslatef(-0.5,2.75,0);
+        glColor3f(0.937, 0.733, 0.203);
+        circle(0.5,0.5);
+    glPopMatrix();
+
+
+    glPushMatrix();  ///hair
+        glTranslatef(-0.5,3,0);
+        glColor3f(0,0,0);
+        hill(0.5,0.5);
+    glPopMatrix();
+
+    glPushMatrix();  ///left eye
+        glTranslatef(-0.76,2.90,0);
+        glColor3f(0,0,0);
+        circle(0.20,0.02);
+    glPopMatrix();
+
+    glPushMatrix();  ///left eye moni
+        glTranslatef(-0.76,2.85,0);
+        glColor3f(0,0,0);
+        circle(0.05,0.05);
+    glPopMatrix();
+
+
+    glPushMatrix();  ///right eye
+        glTranslatef(-0.20,2.90,0);
+        glColor3f(0,0,0);
+        circle(0.20,0.02);
+    glPopMatrix();
+
+    glPushMatrix();  ///right eye moni
+        glTranslatef(-0.20,2.85,0);
+        glColor3f(0,0,0);
+        circle(0.05,0.05);
+    glPopMatrix();
+
+
+    glPushMatrix();  ///nose
+        glTranslatef(-0.45,2.70,0);
+        glColor3f(0,0,0);
+        circle(0.03,0.15);
+    glPopMatrix();
+
+
+    glPushMatrix();  ///lips
+        glTranslatef(-0.45,2.40,0);
+        glColor3f(0,0,0);
+        circle(0.20,0.03);
+    glPopMatrix();
+
+
+    glPushMatrix(); ///right hand
+        glColor3f(0.937, 0.733, 0.203);
+        glBegin(GL_QUADS);
+            glVertex2d(0,2);
+            glVertex2d(0.75,1);
+            glVertex2d(0.50,1);
+            glVertex2d(0,1.60);
+        glEnd();
+    glPopMatrix();
+
+
+
+    glPushMatrix(); ///left hand
+        glColor3f(0.937, 0.733, 0.203);
+        glBegin(GL_QUADS);
+            glVertex2d(-1,2);
+            glVertex2d(-1.75,1);
+            glVertex2d(-1.50,1);
+            glVertex2d(-1,1.60);
+        glEnd();
+    glPopMatrix();
+
+
+glPopMatrix();
+    glPopMatrix();
+}
+
+
+/// for couple
+void couple()
+{
+    glPushMatrix(); /// full couple
+
+    if(couple_x==1)  /// boat e uthbe
+    {
+        glTranslatef(couple_move_x-3,couple_move_y-0.7,0);
+        glScalef(0.65,0.45,0);
+        glPushMatrix();
+///chele_start
+  glPushMatrix();
+  glTranslated(17,-1,0);
+    glPushMatrix(); ///body
+        glBegin(GL_QUADS);
+        glColor3f(0.713, 0.262, 0.286);
+            glVertex2d(-1,1);
+            glVertex2d(0,1);
+            glVertex2d(0,2);
+            glVertex2d(-1,2);
+        glEnd();
+    glPopMatrix();
+
+    glPushMatrix();   ///throat
+        glColor3f(0.882, 0.788, 0.356);
+        glTranslatef(-0.25,1.3,0);
+        glScalef(.5,.5,0);
+        glBegin(GL_QUADS);
+            glVertex2d(-1,1);
+            glVertex2d(0,1);
+            glVertex2d(0,2);
+            glVertex2d(-1,2);
+        glEnd();
+    glPopMatrix();
+
+    glPushMatrix();  ///face
+        glTranslatef(-0.5,2.75,0);
+        glColor3f(0.882, 0.788, 0.356);      /// color change kora lagbe
+        circle(0.5,0.5);
+    glPopMatrix();
+
+
+    glPushMatrix();  ///hair
+        glTranslatef(-0.5,3,0);
+        glColor3f(0,0,0);
+        hill(0.5,0.5);
+    glPopMatrix();
+
+    glPushMatrix();  ///left eye
+        glTranslatef(-0.76,2.90,0);
+        glColor3f(0,0,0);
+        circle(0.20,0.02);
+    glPopMatrix();
+
+    glPushMatrix();  ///left eye moni
+        glTranslatef(-0.76,2.85,0);
+        glColor3f(0,0,0);
+        circle(0.05,0.05);
+    glPopMatrix();
+
+
+    glPushMatrix();  ///right eye
+        glTranslatef(-0.20,2.90,0);
+        glColor3f(0,0,0);
+        circle(0.20,0.02);
+    glPopMatrix();
+
+    glPushMatrix();  ///right eye moni
+        glTranslatef(-0.20,2.85,0);
+        glColor3f(0,0,0);
+        circle(0.05,0.05);
+    glPopMatrix();
+
+
+    glPushMatrix();  ///nose
+        glTranslatef(-0.45,2.70,0);
+        glColor3f(0,0,0);
+        circle(0.03,0.15);
+    glPopMatrix();
+
+
+    glPushMatrix();  ///lips
+        glTranslatef(-0.45,2.40,0);
+        glColor3f(0,0,0);
+        circle(0.20,0.03);
+    glPopMatrix();
+
+
+    glPushMatrix(); ///right hand
+        glColor3f(0.882, 0.788, 0.356);
+        glBegin(GL_QUADS);
+            glVertex2d(0,2);
+            glVertex2d(0.75,1);
+            glVertex2d(0.50,1);
+            glVertex2d(0,1.60);
+        glEnd();
+    glPopMatrix();
+
+
+
+    glPushMatrix(); ///left hand
+        glColor3f(0.882, 0.788, 0.356);
+        glBegin(GL_QUADS);
+            glVertex2d(-1,2);
+            glVertex2d(-1.75,1);
+            glVertex2d(-1.50,1);
+            glVertex2d(-1,1.60);
+        glEnd();
+    glPopMatrix();
+
+    glPushMatrix(); ///pant
+        glTranslated(-1,1,0);
+        glColor3f(0.99,0.99,0.99);
+        glBegin(GL_POLYGON);
+            glVertex2f(0,0);
+            glVertex2f(0,-0.65);
+            glVertex2f(1,-0.65);
+            glVertex2f(1,0);
+        glEnd();
+    glPopMatrix();
+
+
+    glPushMatrix(); ///left_hand _palm
+        glTranslated(-1.7,0.95,0);
+        glColor3f(0.882, 0.788, 0.356);
+        circle(0.15,0.15);
+    glPopMatrix();
+
+
+    glPushMatrix(); ///right_hand _palm
+        glTranslated(0.65,0.95,0);
+        glColor3f(0.882, 0.788, 0.356);
+        circle(0.15,0.15);
+    glPopMatrix();
+ glPopMatrix();
+ ///chele_end
+
+
+ ///mey_start
+ glPushMatrix();
+
+    glTranslatef(14,-1,0);
+     glPushMatrix();  ///hair_long
+        glTranslatef(-0.5,2.5,0);
+        glColor3f(0,0,0);
+        circle(0.7,1);
+    glPopMatrix();
+
+    glPushMatrix(); ///body
+        glBegin(GL_QUADS);
+        glColor3f(0.937, 0.203, 0.423);
+            glVertex2d(-1,1);
+            glVertex2d(0,1);
+            glVertex2d(0,2);
+            glVertex2d(-1,2);
+        glEnd();
+    glPopMatrix();
+
+    glPushMatrix();   ///throat
+       glColor3f(0.882, 0.788, 0.356);
+        glTranslatef(-0.25,1.3,0);
+        glScalef(.5,.5,0);
+        glBegin(GL_QUADS);
+            glVertex2d(-1,1);
+            glVertex2d(0,1);
+            glVertex2d(0,2);
+            glVertex2d(-1,2);
+        glEnd();
+    glPopMatrix();
+
+    glPushMatrix();  ///face
+        glTranslatef(-0.5,2.75,0);
+        glColor3f(0.882, 0.788, 0.356);       /// color change kora lagbe
+        circle(0.5,0.5);
+    glPopMatrix();
+
+
+    glPushMatrix();  ///hair_forehead
+        glTranslatef(-0.5,3,0);
+        glColor3f(0,0,0);
+        hill(0.5,0.5);
+    glPopMatrix();
+
+
+    glPushMatrix();  ///left eye
+        glTranslatef(-0.76,2.90,0);
+        glColor3f(0,0,0);
+        circle(0.20,0.02);
+    glPopMatrix();
+
+    glPushMatrix();  ///left eye moni
+        glTranslatef(-0.76,2.85,0);
+        glColor3f(0,0,0);
+        circle(0.05,0.05);
+    glPopMatrix();
+
+
+    glPushMatrix();  ///right eye
+        glTranslatef(-0.20,2.90,0);
+        glColor3f(0,0,0);
+        circle(0.20,0.02);
+    glPopMatrix();
+
+    glPushMatrix();  ///right eye moni
+        glTranslatef(-0.20,2.85,0);
+        glColor3f(0,0,0);
+        circle(0.05,0.05);
+    glPopMatrix();
+
+
+    glPushMatrix();  ///nose
+        glTranslatef(-0.45,2.70,0);
+        glColor3f(0,0,0);
+        circle(0.03,0.15);
+    glPopMatrix();
+
+
+    glPushMatrix();  ///lips
+        glTranslatef(-0.45,2.40,0);
+        glColor3f(0,0,0);
+        circle(0.20,0.03);
+    glPopMatrix();
+
+
+    glPushMatrix(); ///right hand
+        glColor3f(0.882, 0.788, 0.356);
+        glBegin(GL_QUADS);
+            glVertex2d(0,2);
+            glVertex2d(0.75,1);
+            glVertex2d(0.50,1);
+            glVertex2d(0,1.60);
+        glEnd();
+    glPopMatrix();
+
+
+     glPushMatrix(); ///right_hand_hata
+        glColor3f(0.99,45,0);
+        glBegin(GL_QUADS);
+            glVertex2d(0,2);
+            glVertex2d(0.75,1.5);
+            glVertex2d(0.50,1.5);
+            glVertex2d(0,1.60);
+        glEnd();
+    glPopMatrix();
+
+    glPushMatrix(); ///left hand
+        glColor3f(0.882, 0.788, 0.356);
+        glBegin(GL_QUADS);
+            glVertex2d(-1,2);
+            glVertex2d(-1.75,1);
+            glVertex2d(-1.50,1);
+            glVertex2d(-1,1.60);
+        glEnd();
+    glPopMatrix();
+
+     glPushMatrix(); ///left_hand_hata
+        glColor3f(0.99,45,0);
+        glBegin(GL_QUADS);
+            glVertex2d(-1,2);
+            glVertex2d(-1.75,1.5);
+            glVertex2d(-1.50,1.5);
+            glVertex2d(-1,1.60);
+        glEnd();
+    glPopMatrix();
+
+    glPushMatrix(); ///pant
+        glTranslated(-1,1,0);
+        glColor3f(0.082, 0.878, 0.470);
+        glBegin(GL_POLYGON);
+            glVertex2f(0,0);
+            glVertex2f(-0.65,-0.65);
+            glVertex2f(1.65,-0.65);
+            glVertex2f(1,0);
+        glEnd();
+    glPopMatrix();
+
+    glPushMatrix(); ///left_hand _palm
+        glTranslated(-1.7,0.95,0);
+       glColor3f(0.882, 0.788, 0.356);
+        circle(0.15,0.15);
+    glPopMatrix();
+
+
+    glPushMatrix(); ///right_hand _palm
+        glTranslated(0.65,0.95,0);
+        glColor3f(0.882, 0.788, 0.356);
+        circle(0.15,0.15);
+    glPopMatrix();
+ glPopMatrix();
+ ///mey_end
+
+glPopMatrix();
+
+    }
+
+    else if(couple_x==0)    /// initial point e thakbe
+    {
+        glTranslatef(couple_move_x+2,couple_move_y+1,0);
+        glScalef(0.75,0.75,0);
+        glPushMatrix();
+
+///chele_start
+  glPushMatrix();
+  glTranslated(17,-1,0);
+    glPushMatrix(); ///body
+        glBegin(GL_QUADS);
+        glColor3f(0.713, 0.262, 0.286);
+            glVertex2d(-1,1);
+            glVertex2d(0,1);
+            glVertex2d(0,2);
+            glVertex2d(-1,2);
+        glEnd();
+    glPopMatrix();
+
+    glPushMatrix();   ///throat
+       glColor3f(0.882, 0.788, 0.356);
+        glTranslatef(-0.25,1.3,0);
+        glScalef(.5,.5,0);
+        glBegin(GL_QUADS);
+            glVertex2d(-1,1);
+            glVertex2d(0,1);
+            glVertex2d(0,2);
+            glVertex2d(-1,2);
+        glEnd();
+    glPopMatrix();
+
+    glPushMatrix();  ///face
+        glTranslatef(-0.5,2.75,0);
+        glColor3f(0.882, 0.788, 0.356);       /// color change kora lagbe
+        circle(0.5,0.5);
+    glPopMatrix();
+
+
+    glPushMatrix();  ///hair
+        glTranslatef(-0.5,3,0);
+        glColor3f(0,0,0);
+        hill(0.5,0.5);
+    glPopMatrix();
+
+    glPushMatrix();  ///left eye
+        glTranslatef(-0.76,2.90,0);
+        glColor3f(0,0,0);
+        circle(0.20,0.02);
+    glPopMatrix();
+
+    glPushMatrix();  ///left eye moni
+        glTranslatef(-0.76,2.85,0);
+        glColor3f(0,0,0);
+        circle(0.05,0.05);
+    glPopMatrix();
+
+
+    glPushMatrix();  ///right eye
+        glTranslatef(-0.20,2.90,0);
+        glColor3f(0,0,0);
+        circle(0.20,0.02);
+    glPopMatrix();
+
+    glPushMatrix();  ///right eye moni
+        glTranslatef(-0.20,2.85,0);
+        glColor3f(0,0,0);
+        circle(0.05,0.05);
+    glPopMatrix();
+
+
+    glPushMatrix();  ///nose
+        glTranslatef(-0.45,2.70,0);
+        glColor3f(0,0,0);
+        circle(0.03,0.15);
+    glPopMatrix();
+
+
+    glPushMatrix();  ///lips
+        glTranslatef(-0.45,2.40,0);
+        glColor3f(0,0,0);
+        circle(0.20,0.03);
+    glPopMatrix();
+
+
+    glPushMatrix(); ///right hand
+        glColor3f(0.882, 0.788, 0.356);
+        glBegin(GL_QUADS);
+            glVertex2d(0,2);
+            glVertex2d(0.75,1);
+            glVertex2d(0.50,1);
+            glVertex2d(0,1.60);
+        glEnd();
+    glPopMatrix();
+
+    glPushMatrix(); ///left hand
+        glColor3f(0.882, 0.788, 0.356);
+        glBegin(GL_QUADS);
+            glVertex2d(-1,2);
+            glVertex2d(-1.75,1);
+            glVertex2d(-1.50,1);
+            glVertex2d(-1,1.60);
+        glEnd();
+    glPopMatrix();
+
+    glPushMatrix(); ///pant
+        glTranslated(-1,1,0);
+        glColor3f(0.99,0.99,0.99);
+        glBegin(GL_POLYGON);
+            glVertex2f(0,0);
+            glVertex2f(0,-1.5);
+            glVertex2f(0.3,-1.5);
+            glVertex2f(0.7,-0.1);
+            glVertex2f(0.7,-1.5);
+            glVertex2f(1,-1.5);
+            glVertex2f(1,0);
+        glEnd();
+    glPopMatrix();
+
+
+      glPushMatrix(); ///leg_left
+        glTranslated(-1.05,1,0);
+        glColor3f(0.882, 0.788, 0.356);
+        glBegin(GL_POLYGON);
+            glVertex2f(0.1,-1.5);
+            glVertex2f(0.3,-1.5);
+            glVertex2f(0.3,-1.8);
+            glVertex2f(0.1,-1.8);
+        glEnd();
+    glPopMatrix();
+
+
+    glPushMatrix(); ///leg_right
+        glTranslated(-0.35,1,0);
+        glColor3f(0.882, 0.788, 0.356);
+        glBegin(GL_POLYGON);
+            glVertex2f(0.1,-1.5);
+            glVertex2f(0.3,-1.5);
+            glVertex2f(0.3,-1.8);
+            glVertex2f(0.1,-1.8);
+        glEnd();
+    glPopMatrix();
+
+    glPushMatrix(); ///leg_left_shoe
+        glTranslated(-1.1,0.7,0);
+        glColor3f(0,0,0);
+        glBegin(GL_POLYGON);
+            glVertex2f(0.1,-1.5);
+            glVertex2f(0.4,-1.5);
+            glVertex2f(0.6,-1.7);
+            glVertex2f(0.1,-1.7);
+        glEnd();
+    glPopMatrix();
+
+    glPushMatrix(); ///leg_right_shoe
+        glTranslated(-0.4,0.7,0);
+        glColor3f(0,0,0);
+        glBegin(GL_POLYGON);
+            glVertex2f(0.1,-1.5);
+            glVertex2f(0.4,-1.5);
+            glVertex2f(0.6,-1.7);
+            glVertex2f(0.1,-1.7);
+        glEnd();
+    glPopMatrix();
+
+
+    glPushMatrix(); ///left_hand _palm
+        glTranslated(-1.7,0.95,0);
+        glColor3f(0.882, 0.788, 0.356);
+        circle(0.15,0.15);
+    glPopMatrix();
+
+
+    glPushMatrix(); ///right_hand _palm
+        glTranslated(0.65,0.95,0);
+        glColor3f(0.882, 0.788, 0.356);
+        circle(0.15,0.15);
+    glPopMatrix();
+ glPopMatrix();
+ ///chele_end
+
+
+ ///mey_start
+ glPushMatrix();
+
+    glTranslatef(14,-1,0);
+     glPushMatrix();  ///hair_long
+        glTranslatef(-0.5,2.5,0);
+        glColor3f(0,0,0);
+        circle(0.7,1);
+    glPopMatrix();
+
+
+    glPushMatrix(); ///body
+        glBegin(GL_QUADS);
+        glColor3f(0.937, 0.203, 0.423);
+            glVertex2d(-1,1);
+            glVertex2d(0,1);
+            glVertex2d(0,2);
+            glVertex2d(-1,2);
+        glEnd();
+    glPopMatrix();
+
+    glPushMatrix();   ///throat
+       glColor3f(0.882, 0.788, 0.356);
+        glTranslatef(-0.25,1.3,0);
+        glScalef(.5,.5,0);
+        glBegin(GL_QUADS);
+            glVertex2d(-1,1);
+            glVertex2d(0,1);
+            glVertex2d(0,2);
+            glVertex2d(-1,2);
+        glEnd();
+    glPopMatrix();
+
+    glPushMatrix();  ///face
+        glTranslatef(-0.5,2.75,0);
+        glColor3f(0.882, 0.788, 0.356);       /// color change kora lagbe
+        circle(0.5,0.5);
+    glPopMatrix();
+
+
+    glPushMatrix();  ///hair_forehead
+        glTranslatef(-0.5,3,0);
+        glColor3f(0,0,0);
+        hill(0.5,0.5);
+    glPopMatrix();
+
+
+    glPushMatrix();  ///left eye
+        glTranslatef(-0.76,2.90,0);
+        glColor3f(0,0,0);
+        circle(0.20,0.02);
+    glPopMatrix();
+
+    glPushMatrix();  ///left eye moni
+        glTranslatef(-0.76,2.85,0);
+        glColor3f(0,0,0);
+        circle(0.05,0.05);
+    glPopMatrix();
+
+
+    glPushMatrix();  ///right eye
+        glTranslatef(-0.20,2.90,0);
+        glColor3f(0,0,0);
+        circle(0.20,0.02);
+    glPopMatrix();
+
+    glPushMatrix();  ///right eye moni
+        glTranslatef(-0.20,2.85,0);
+        glColor3f(0,0,0);
+        circle(0.05,0.05);
+    glPopMatrix();
+
+
+    glPushMatrix();  ///nose
+        glTranslatef(-0.45,2.70,0);
+        glColor3f(0,0,0);
+        circle(0.03,0.15);
+    glPopMatrix();
+
+
+    glPushMatrix();  ///lips
+        glTranslatef(-0.45,2.40,0);
+        glColor3f(0,0,0);
+        circle(0.20,0.03);
+    glPopMatrix();
+
+
+    glPushMatrix(); ///right hand
+        glColor3f(0.882, 0.788, 0.356);
+        glBegin(GL_QUADS);
+            glVertex2d(0,2);
+            glVertex2d(0.75,1);
+            glVertex2d(0.50,1);
+            glVertex2d(0,1.60);
+        glEnd();
+    glPopMatrix();
+
+
+     glPushMatrix(); ///right_hand_hata
+        glColor3f(0.99,45,0);
+        glBegin(GL_QUADS);
+            glVertex2d(0,2);
+            glVertex2d(0.75,1.5);
+            glVertex2d(0.50,1.5);
+            glVertex2d(0,1.60);
+        glEnd();
+    glPopMatrix();
+
+    glPushMatrix(); ///left hand
+        glColor3f(0.882, 0.788, 0.356);
+        glBegin(GL_QUADS);
+            glVertex2d(-1,2);
+            glVertex2d(-1.75,1);
+            glVertex2d(-1.50,1);
+            glVertex2d(-1,1.60);
+        glEnd();
+    glPopMatrix();
+
+     glPushMatrix(); ///left_hand_hata
+        glColor3f(0.99,45,0);
+        glBegin(GL_QUADS);
+            glVertex2d(-1,2);
+            glVertex2d(-1.75,1.5);
+            glVertex2d(-1.50,1.5);
+            glVertex2d(-1,1.60);
+        glEnd();
+    glPopMatrix();
+
+    glPushMatrix(); ///pant
+        glTranslated(-1,1,0);
+        glColor3f(0.082, 0.878, 0.470);
+        glBegin(GL_POLYGON);
+            glVertex2f(0,0);
+            glVertex2f(-1,-1.5);
+            glVertex2f(2,-1.5);
+            glVertex2f(1,0);
+        glEnd();
+    glPopMatrix();
+
+
+      glPushMatrix(); ///leg_left
+        glTranslated(-1.05,1,0);
+        glColor3f(0.882, 0.788, 0.356);
+        glBegin(GL_POLYGON);
+            glVertex2f(0.1,-1.5);
+            glVertex2f(0.3,-1.5);
+            glVertex2f(0.3,-1.8);
+            glVertex2f(0.1,-1.8);
+        glEnd();
+    glPopMatrix();
+
+    glPushMatrix(); ///leg_right
+        glTranslated(-0.35,1,0);
+        glColor3f(0.882, 0.788, 0.356);
+        glBegin(GL_POLYGON);
+            glVertex2f(0.1,-1.5);
+            glVertex2f(0.3,-1.5);
+            glVertex2f(0.3,-1.8);
+            glVertex2f(0.1,-1.8);
+        glEnd();
+    glPopMatrix();
+
+    glPushMatrix(); ///leg_left_shoe
+        glTranslated(-1.1,0.7,0);
+        glColor3f(0,0,0);
+        glBegin(GL_POLYGON);
+            glVertex2f(0.1,-1.5);
+            glVertex2f(0.4,-1.5);
+            glVertex2f(0.6,-1.7);
+            glVertex2f(0.1,-1.7);
+        glEnd();
+    glPopMatrix();
+
+    glPushMatrix(); ///leg_right_shoe
+        glTranslated(-0.4,0.7,0);
+        glColor3f(0,0,0);
+        glBegin(GL_POLYGON);
+            glVertex2f(0.1,-1.5);
+            glVertex2f(0.4,-1.5);
+            glVertex2f(0.6,-1.7);
+            glVertex2f(0.1,-1.7);
+        glEnd();
+    glPopMatrix();
+
+
+    glPushMatrix(); ///left_hand _palm
+        glTranslated(-1.7,0.95,0);
+        glColor3f(0.882, 0.788, 0.356);
+        circle(0.15,0.15);
+    glPopMatrix();
+
+
+    glPushMatrix(); ///right_hand _palm
+        glTranslated(0.65,0.95,0);
+        glColor3f(0.882, 0.788, 0.356);
+        circle(0.15,0.15);
+    glPopMatrix();
+ glPopMatrix();
+ ///mey_end
+
+glPopMatrix();
+
+    }
+}
+
+
+void chele()
+{
+
+    glPushMatrix();
+///chele_start
+  glPushMatrix();
+  glTranslated(17,-1,0);
+    glPushMatrix(); ///body
+        glBegin(GL_QUADS);
+        glColor3f(0.701, 0.6, 0.223);
+            glVertex2d(-1,1);
+            glVertex2d(0,1);
+            glVertex2d(0,2);
+            glVertex2d(-1,2);
+        glEnd();
+    glPopMatrix();
+
+    glPushMatrix();   ///throat
+        glColor3f(0.882, 0.788, 0.356);
+        glTranslatef(-0.25,1.3,0);
+        glScalef(.5,.5,0);
+        glBegin(GL_QUADS);
+            glVertex2d(-1,1);
+            glVertex2d(0,1);
+            glVertex2d(0,2);
+            glVertex2d(-1,2);
+        glEnd();
+    glPopMatrix();
+
+    glPushMatrix();  ///face
+        glTranslatef(-0.5,2.75,0);
+        glColor3f(0.882, 0.788, 0.356);      /// color change kora lagbe
+        circle(0.5,0.5);
+    glPopMatrix();
+
+
+    glPushMatrix();  ///hair
+        glTranslatef(-0.5,3,0);
+        glColor3f(0,0,0);
+        hill(0.5,0.5);
+    glPopMatrix();
+
+    glPushMatrix();  ///left eye
+        glTranslatef(-0.76,2.90,0);
+        glColor3f(0,0,0);
+        circle(0.20,0.02);
+    glPopMatrix();
+
+    glPushMatrix();  ///left eye moni
+        glTranslatef(-0.76,2.85,0);
+        glColor3f(0,0,0);
+        circle(0.05,0.05);
+    glPopMatrix();
+
+
+    glPushMatrix();  ///right eye
+        glTranslatef(-0.20,2.90,0);
+        glColor3f(0,0,0);
+        circle(0.20,0.02);
+    glPopMatrix();
+
+    glPushMatrix();  ///right eye moni
+        glTranslatef(-0.20,2.85,0);
+        glColor3f(0,0,0);
+        circle(0.05,0.05);
+    glPopMatrix();
+
+
+    glPushMatrix();  ///nose
+        glTranslatef(-0.45,2.70,0);
+        glColor3f(0,0,0);
+        circle(0.03,0.15);
+    glPopMatrix();
+
+
+    glPushMatrix();  ///lips
+        glTranslatef(-0.45,2.40,0);
+        glColor3f(0,0,0);
+        circle(0.20,0.03);
+    glPopMatrix();
+
+    glPushMatrix();  ///left hand
+
+        glPushMatrix();
+        glTranslatef(-1,1,0);
+        glColor3f(0.882, 0.788, 0.356);
+        glBegin(GL_QUADS);
+            glVertex2f(0,1);
+            glVertex2f(-0.40,1);
+            glVertex2f(-0.40,0.30);
+            glVertex2f(0,0.30);
+        glEnd();
+    glPopMatrix();
+
+    glPushMatrix();
+        glTranslatef(0,-0.5,0);
+        glColor3f(0.882, 0.788, 0.356);
+        glBegin(GL_QUADS);
+            glVertex2d(-1,2);
+            glVertex2d(-3,2);
+            glVertex2d(-3,1.60);
+            glVertex2d(-1,1.60);
+        glEnd();
+    glPopMatrix();
+
+    glPopMatrix();
+
+    glPushMatrix();
+      glPushMatrix(); ///borsha
+        glColor3f(0,0,0);
+        glTranslatef(-4.50,4,0);
+        glBegin(GL_TRIANGLES);
+            glVertex2f(0,0);
+            glVertex2f(2.20,-5);
+            glVertex2f(2.30,-4.90);
+        glEnd();
+        glPopMatrix();
+
+        glPushMatrix();
+            glTranslatef(-4.50,3.80,0);
+            glColor3f(0,0,0);
+            circle_hole(0.15,0.15);
+        glPopMatrix();
+
+        glPushMatrix();     ///suta
+            suta_y-=0.001;
+            if(suta_y>-4)
+            {
+                glTranslatef(-4.50,3.80,0);
+                glColor3f(0,0,0);
+                glBegin(GL_LINES);
+                    glVertex2f(0,0);
+                    glVertex2f(0,-0.5+suta_y);
+                glEnd();
+            }
+            else
+            {
+                suta_y=-0.5;
+                glTranslatef(-4.50,3.80,0);
+                glColor3f(0,0,0);
+                glBegin(GL_LINES);
+                    glVertex2f(0,0);
+                    glVertex2f(0,suta_y);
+                glEnd();
+
+            }
+
+
+        glPopMatrix();
+
+    glPopMatrix();
+
+
+
+   glPushMatrix(); ///right_hand
+   glTranslatef(0,2,0);
+        glColor3f(0.882, 0.788, 0.356);
+        glBegin(GL_QUADS);
+            glVertex2d(0,0);
+            glVertex2d(-3,-0.50);
+            glVertex2d(-2.60,-0.90);
+            glVertex2d(0,-0.40);
+        glEnd();
+    glPopMatrix();
+
+    glPushMatrix(); ///pant
+        glTranslated(-0.01,1,0);
+        glColor3f(0.99,0.99,0.99);
+        glBegin(GL_POLYGON);
+            glVertex2f(0,0);
+            glVertex2f(-2,0);
+            glVertex2f(-2,-1);
+            glVertex2f(0,-1);
+        glEnd();
+    glPopMatrix();
+
+
+    glPushMatrix(); ///left_hand _palm
+        glTranslated(-3.10,1.3,0);
+        glColor3f(0.882, 0.788, 0.356);
+        circle(0.25,0.25);
+    glPopMatrix();
+
+
+    glPushMatrix(); ///left_leg
+        glColor3f(0.882, 0.788, 0.356);
+
+        glPushMatrix();
+        glTranslatef(-2,1,0);
+        glBegin(GL_QUADS);
+            glVertex2f(0,0);
+            glVertex2f(-1,0);
+            glVertex2f(-1,-0.40);
+            glVertex2f(0,-0.40);
+        glEnd();
+        glPopMatrix();
+
+
+        glPushMatrix();
+        glTranslatef(-3,1,0);
+         glBegin(GL_QUADS);
+            glVertex2f(0,0);
+            glVertex2f(0,-1);
+            glVertex2f(0.40,-1);
+            glVertex2f(0.40,0);
+        glEnd();
+        glPopMatrix();
+
+    glPopMatrix();
+
+
+
+     glPushMatrix(); ///right_leg
+        glColor3f(0.882, 0.788, 0.356);
+
+        glPushMatrix();
+        glTranslatef(-2,0.50,0);
+        glBegin(GL_QUADS);
+            glVertex2f(0,0);
+            glVertex2f(-0.50,0);
+            glVertex2f(-0.50,-0.40);
+            glVertex2f(0,-0.40);
+        glEnd();
+        glPopMatrix();
+
+        glPushMatrix();
+        glTranslatef(-2.55,0.50,0);
+         glBegin(GL_QUADS);
+            glVertex2f(0,0);
+            glVertex2f(0,-1);
+            glVertex2f(0.40,-1);
+            glVertex2f(0.40,0);
+        glEnd();
+        glPopMatrix();
+
+    glPopMatrix();
+
+
+
+ glPopMatrix();
+ ///chele_end
+ glPopMatrix();
+
+
+}
+
+void ship_without_man()
+{
+
+glPushMatrix();
+
+    glTranslatef(-10,0,0);
+
+    glPushMatrix();
+    glColor3f(0.12,0.12,0.12); /// dandii_left
+    glTranslatef(-6.5,-.5,0);
+    glBegin(GL_POLYGON);
+        glVertex2d(4.25,1);
+        glVertex2d(4.50,1);
+        glVertex2d(4.50,3);
+        glVertex2d(4.25,3);
+    glEnd();
+    glPopMatrix();
+
+
+    glPushMatrix();
+    glColor3f(0.12,0.12,0.12); /// dandii_right
+    glTranslatef(-0.25,-.5,0);
+    glBegin(GL_POLYGON);
+        glVertex2d(4.25,1);
+        glVertex2d(4.50,1);
+        glVertex2d(4.50,3);
+        glVertex2d(4.25,3);
+    glEnd();
+    glPopMatrix();
+
+
+    glPushMatrix();
+
+    glBegin(GL_POLYGON);    ///main part
+        glColor3f(0.858, 0.439, 0.576);
+        glVertex2d(-2,0);
+        glVertex2d(4,0);
+        glVertex2d(5,1);
+        glVertex2d(-3,1);
+    glEnd();
+    glPopMatrix();
+
+    glPushMatrix(); ///upper umbrella
+        glTranslated(1,2.5,0);
+        hill(3.75,1);
+        glColor3f(0,0,0);
+
+        glTranslatef(-3.15,0.25,0);  ///left_side_circle
+        circle(.15,0.15);
+
+        glTranslatef(6.25,0.05,0);  ///right_side_circle
+        circle(.15,0.15);
+    glPopMatrix();
+
+glPopMatrix();
+}
+
+
+void fishBig()
+{
+
+glPushMatrix();
+
+    glPushMatrix();
+        glTranslatef(-2,0,0);
+     glColor3f(1, 0.756, 0.145);
+
+    circle(1.5,0.3);
+    glColor3f(0.721, 0.184, 0.058);
+    glPopMatrix();
+
+
+    glPushMatrix();
+        glTranslatef(-3,0,0);
+        glColor3f(0,0,0);
+        circle(0.09,0.09);
+    glPopMatrix();
+
+
+    glPushMatrix();
+        glTranslatef(-0.9,0,0);
+        glColor3f(0.545, 0.396, 0.031);
+
+        glBegin(GL_TRIANGLES);
+            glVertex2d(0,0);
+            glVertex2d(0.8,-0.3);
+            glVertex2d(0.8,0.3);
+        glEnd();
+
+    glPopMatrix();
+
+
+glPopMatrix();
+}
+
+void fishRight()
+{
+
+glPushMatrix();
+
+    glPushMatrix();
+        glTranslatef(-2,0,0);
+        glColor3f(0.568, 0.568, 0.568);
+        circle(1.5,0.3);
+        glColor3f(0.721, 0.184, 0.058);
+    glPopMatrix();
+
+
+    glPushMatrix();
+        glTranslatef(-1,0,0);
+        glColor3f(0,0,0);
+        circle(0.09,0.09);
+    glPopMatrix();
+
+
+    glPushMatrix();
+        glTranslatef(-2.5,0,0);
+        glColor3f(0.349, 0.349, 0.349);
+
+        glBegin(GL_TRIANGLES);
+            glVertex2d(0,0);
+            glVertex2d(-1.5,-0.3);
+            glVertex2d(-1.5,0.3);
+        glEnd();
+
+    glPopMatrix();
+
+glPopMatrix();
+}
+
+void fishSmall()
+{
+
+glPushMatrix();
+
+    glPushMatrix();
+    glTranslatef(-2,0,0);
+    glColor3f(0.803, 0.521, 0.247);
+    circle(1.5,0.3);
+    glPopMatrix();
+
+
+    glPushMatrix();
+        glTranslatef(-3,0,0);
+        glColor3f(0,0,0);
+        circle(0.09,0.09);
+    glPopMatrix();
+
+
+    glPushMatrix();
+        glTranslatef(-0.9,0,0);
+        glColor3f(0.698, 0.133, 0.133);
+
+        glBegin(GL_TRIANGLES);
+            glVertex2d(0,0);
+            glVertex2d(0.8,-0.3);
+            glVertex2d(0.8,0.3);
+        glEnd();
+
+    glPopMatrix();
+
+glPopMatrix();
+}
+
+
+void mey()
+{
+
+ ///mey_start
+    glTranslatef(-15,2.5,0);
+ glPushMatrix();
+
+    glTranslatef(14,-1,0);
+     glPushMatrix();  ///hair_long
+        glTranslatef(-1,3,0);
+        glColor3f(0,0,0);
+        circle(0.5,0.5);
+    glPopMatrix();
+
+
+
+    glPushMatrix();   ///throat
+       glColor3f(0.882, 0.788, 0.356);
+        glTranslatef(-0.25,1.3,0);
+        glScalef(.5,.5,0);
+        glBegin(GL_QUADS);
+            glVertex2d(-1,1);
+            glVertex2d(0,1);
+            glVertex2d(0,2);
+            glVertex2d(-1,2);
+        glEnd();
+    glPopMatrix();
+
+    glPushMatrix(); ///body
+        glBegin(GL_QUADS);
+        glColor3f(0.937, 0, 0);
+            glVertex2d(-1,1);
+            glVertex2d(0,1);
+            glVertex2d(0,2);
+            glVertex2d(-1,2);
+        glEnd();
+    glPopMatrix();
+
+    glPushMatrix();  ///face
+        glTranslatef(-0.5,2.75,0);
+        glColor3f(0.882, 0.788, 0.356);       /// color change kora lagbe
+        circle(0.5,0.5);
+    glPopMatrix();
+
+
+    glPushMatrix();  ///hair_forehead
+        glTranslatef(-0.5,3,0);
+        glColor3f(0,0,0);
+        hill(0.5,0.5);
+    glPopMatrix();
+
+
+    glPushMatrix();  ///right eye
+        glTranslatef(-0.20,2.90,0);
+        glColor3f(0,0,0);
+        circle(0.20,0.02);
+    glPopMatrix();
+
+    glPushMatrix();  ///right eye moni
+        glTranslatef(-0.20,2.85,0);
+        glColor3f(0,0,0);
+        circle(0.05,0.05);
+    glPopMatrix();
+
+    glPushMatrix();  ///lips
+        glTranslatef(-0.20,2.55,0);
+        glColor3f(0,0,0);
+        circle(0.15,0.03);
+    glPopMatrix();
+
+
+ glPushMatrix(); ///right hand
+        glColor3f(0.882, 0.788, 0.356);
+        glBegin(GL_QUADS);
+            glVertex2d(0,2);
+            glVertex2d(0.75,1);
+            glVertex2d(0.50,1);
+            glVertex2d(0,1.60);
+        glEnd();
+    glPopMatrix();
+
+
+    glPushMatrix();     ///kolsi
+        glTranslated(0.5,1,0);
+     glPushMatrix();        ///boro
+        glColor3f(0.803, 0.521, 0.247);
+        circle(0.5,0.75);
+     glPopMatrix();
+
+     glPushMatrix();        /// choto
+     glTranslatef(0,0.75,0);
+        glColor3f(0.99, 0.99, 0);
+        circle(0.3,0.3);
+     glPopMatrix();
+
+    glPopMatrix();
+
+
+
+    glPushMatrix(); ///left hand
+        glTranslatef(-1.5,0,0);
+        glColor3f(0.882, 0.788, 0.356);
+        glBegin(GL_QUADS);
+            glVertex2d(1,2);
+            glVertex2d(1.75,1);
+            glVertex2d(1.50,1);
+            glVertex2d(1,1.60);
+        glEnd();
+    glPopMatrix();
+
+
+    glPushMatrix(); ///pant
+        glTranslated(-1,-0.5,0);
+        glColor3f(0, 0, 0.98);
+        glBegin(GL_POLYGON);
+            glVertex2f(0,0);
+            glVertex2f(0,1.5);
+            glVertex2f(1,1.5);
+            glVertex2f(1,0);
+        glEnd();
+    glPopMatrix();
+
+    glPushMatrix(); ///left_hand _palm
+        glTranslated(0.1,0.95,0);
+       glColor3f(0.882, 0.788, 0.356);
+        circle(0.15,0.15);
+    glPopMatrix();
+
+    glPushMatrix(); ///leg_left
+        glTranslated(-1.05,1,0);
+        glColor3f(0.882, 0.788, 0.356);
+        glBegin(GL_POLYGON);
+            glVertex2f(0.1,-1.5);
+            glVertex2f(0.3,-1.5);
+            glVertex2f(0.3,-1.8);
+            glVertex2f(0.1,-1.8);
+        glEnd();
+    glPopMatrix();
+
+
+
+
+
+      glPushMatrix(); ///leg_right
+        glTranslated(-0.35,1,0);
+        glColor3f(0.882, 0.788, 0.356);
+        glBegin(GL_POLYGON);
+            glVertex2f(0.1,-1.5);
+            glVertex2f(0.3,-1.5);
+            glVertex2f(0.3,-1.8);
+            glVertex2f(0.1,-1.8);
+        glEnd();
+    glPopMatrix();
+
+
+     glPushMatrix(); ///leg_left_shoe
+        glTranslated(-1.1,0.7,0);
+        glColor3f(0,0,0);
+        glBegin(GL_POLYGON);
+            glVertex2f(0.1,-1.5);
+            glVertex2f(0.4,-1.5);
+            glVertex2f(0.6,-1.7);
+            glVertex2f(0.1,-1.7);
+        glEnd();
+    glPopMatrix();
+
+
+     glPushMatrix(); ///leg_right_shoe
+        glTranslated(-0.4,0.7,0);
+        glColor3f(0,0,0);
+        glBegin(GL_POLYGON);
+            glVertex2f(0.1,-1.5);
+            glVertex2f(0.4,-1.5);
+            glVertex2f(0.6,-1.7);
+            glVertex2f(0.1,-1.7);
+        glEnd();
+    glPopMatrix();
+
+
+ glPopMatrix();
+ ///mey_end
+
+}
+
+
+
+void mey_with_balthi()
+{
+
+ ///mey_start
+    glTranslatef(-15,2.5,0);
+ glPushMatrix();
+
+    glTranslatef(14,-1,0);
+     glPushMatrix();  ///hair_long
+        glTranslatef(-1,3,0);
+        glColor3f(0,0,0);
+        circle(0.5,0.5);
+    glPopMatrix();
+
+
+
+    glPushMatrix();   ///throat
+       glColor3f(0.882, 0.788, 0.356);
+        glTranslatef(-0.25,1.3,0);
+        glScalef(.5,.5,0);
+        glBegin(GL_QUADS);
+            glVertex2d(-1,1);
+            glVertex2d(0,1);
+            glVertex2d(0,2);
+            glVertex2d(-1,2);
+        glEnd();
+    glPopMatrix();
+
+    glPushMatrix(); ///body
+        glBegin(GL_QUADS);
+        glColor3f(0.937, 0, 0);
+            glVertex2d(-1,1);
+            glVertex2d(0,1);
+            glVertex2d(0,2);
+            glVertex2d(-1,2);
+        glEnd();
+    glPopMatrix();
+
+    glPushMatrix();  ///face
+        glTranslatef(-0.5,2.75,0);
+        glColor3f(0.882, 0.788, 0.356);       /// color change kora lagbe
+        circle(0.5,0.5);
+    glPopMatrix();
+
+
+    glPushMatrix();  ///hair_forehead
+        glTranslatef(-0.5,3,0);
+        glColor3f(0,0,0);
+        hill(0.5,0.5);
+    glPopMatrix();
+
+
+    glPushMatrix();  ///right eye
+        glTranslatef(-0.20,2.90,0);
+        glColor3f(0,0,0);
+        circle(0.20,0.02);
+    glPopMatrix();
+
+    glPushMatrix();  ///right eye moni
+        glTranslatef(-0.20,2.85,0);
+        glColor3f(0,0,0);
+        circle(0.05,0.05);
+    glPopMatrix();
+
+    glPushMatrix();  ///lips
+        glTranslatef(-0.20,2.55,0);
+        glColor3f(0,0,0);
+        circle(0.15,0.03);
+    glPopMatrix();
+
+
+ glPushMatrix(); ///right hand
+        glColor3f(0.882, 0.788, 0.356);
+        glBegin(GL_QUADS);
+            glVertex2d(0,2);
+            glVertex2d(0.75,1);
+            glVertex2d(0.50,1);
+            glVertex2d(0,1.60);
+        glEnd();
+    glPopMatrix();
+
+
+    glPushMatrix();     ///kolsi
+        glTranslated(-0.6,3.9,0);
+     glPushMatrix();        ///boro
+        glColor3f(0.803, 0.521, 0.247);
+        circle(0.75,0.5);
+     glPopMatrix();
+
+     glPushMatrix();        /// choto
+     glTranslatef(0,0.50,0);
+        glColor3f(0.99, 0.99, 0);
+        circle(0.3,0.3);
+     glPopMatrix();
+
+    glPopMatrix();
+
+
+
+    glPushMatrix(); ///left hand
+        glTranslatef(-1.5,0,0);
+        glColor3f(0.882, 0.788, 0.356);
+        glBegin(GL_QUADS);
+            glVertex2d(1,2);
+            glVertex2d(1.75,1);
+            glVertex2d(1.50,1);
+            glVertex2d(1,1.60);
+        glEnd();
+    glPopMatrix();
+
+
+    glPushMatrix(); ///pant
+        glTranslated(-1,-0.5,0);
+        glColor3f(0, 0, 0.98);
+        glBegin(GL_POLYGON);
+            glVertex2f(0,0);
+            glVertex2f(0,1.5);
+            glVertex2f(1,1.5);
+            glVertex2f(1,0);
+        glEnd();
+    glPopMatrix();
+
+    glPushMatrix(); ///left_hand _palm
+        glTranslated(0.1,0.95,0);
+       glColor3f(0.882, 0.788, 0.356);
+        circle(0.15,0.15);
+    glPopMatrix();
+
+    glPushMatrix(); ///right_hand _palm
+        glTranslated(0.65,0.95,0);
+       glColor3f(0.882, 0.788, 0.356);
+        circle(0.15,0.15);
+    glPopMatrix();
+
+
+
+    glPushMatrix(); ///leg_left
+        glTranslated(-1.05,1,0);
+        glColor3f(0.882, 0.788, 0.356);
+        glBegin(GL_POLYGON);
+            glVertex2f(0.1,-1.5);
+            glVertex2f(0.3,-1.5);
+            glVertex2f(0.3,-1.8);
+            glVertex2f(0.1,-1.8);
+        glEnd();
+    glPopMatrix();
+
+
+
+
+
+      glPushMatrix(); ///leg_right
+        glTranslated(-0.35,1,0);
+        glColor3f(0.882, 0.788, 0.356);
+        glBegin(GL_POLYGON);
+            glVertex2f(0.1,-1.5);
+            glVertex2f(0.3,-1.5);
+            glVertex2f(0.3,-1.8);
+            glVertex2f(0.1,-1.8);
+        glEnd();
+    glPopMatrix();
+
+
+     glPushMatrix(); ///leg_left_shoe
+        glTranslated(-1.1,0.7,0);
+        glColor3f(0,0,0);
+        glBegin(GL_POLYGON);
+            glVertex2f(0.1,-1.5);
+            glVertex2f(0.4,-1.5);
+            glVertex2f(0.6,-1.7);
+            glVertex2f(0.1,-1.7);
+        glEnd();
+    glPopMatrix();
+
+
+     glPushMatrix(); ///leg_right_shoe
+        glTranslated(-0.4,0.7,0);
+        glColor3f(0,0,0);
+        glBegin(GL_POLYGON);
+            glVertex2f(0.1,-1.5);
+            glVertex2f(0.4,-1.5);
+            glVertex2f(0.6,-1.7);
+            glVertex2f(0.1,-1.7);
+        glEnd();
+    glPopMatrix();
+
+
+ glPopMatrix();
+ ///mey_end
+
+}
+
+
+void init(void)
+{
+	glClearColor (0.0, 0.0, 0.0, 0.0);
+	glOrtho(-20.0, 20.0, -10.0, 10.0, -15.0, 15.0);  ///left,right,bottom,top,near,far
+}
+
+
+
+void display(void)
+{
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    sky();
+    sun();
+    river();
+    ///Cloud Position
+    glPushMatrix();///1
+        glTranslatef(-17,3,0);
+        cloud();
+    glPopMatrix();
+
+    glPushMatrix(); ///2 move
+        cloudRight=cloudRight+0.003;
+        if(cloudRight>25)
+        {
+            cloudRight=-20;
+        }
+        glTranslatef(cloudRight-8,4,0);
+        cloud();
+
+        glutPostRedisplay();
+    glPopMatrix();
+
+
+    glPushMatrix(); ///3
+        glTranslatef(0,4.5,0);
+        cloud();
+    glPopMatrix();
+
+    glPushMatrix(); ///4
+        glTranslatef(8,3.5,0);
+        cloud();
+    glPopMatrix();
+
+    glPushMatrix(); ///5 move
+        cloudLeft=cloudLeft-0.003;
+        if(cloudLeft<-35)
+        {
+            cloudLeft=17;
+        }
+        glTranslatef(cloudLeft+15,4.5,0);
+        cloud();
+
+        glutPostRedisplay();
+    glPopMatrix();
+
+
+    ///hill and tree position
+    glPushMatrix();
+        glColor3f(0,0.93,0);           ///hill 1
+        glTranslated(-3,0,0);
+        hill(10,3);
+    glPopMatrix();
+
+
+     glPushMatrix();        /// mey with haat e kolsi position
+        mey_balthi_x+=0.005;
+        if(mey_balthi_x>33)
+        {
+            mey_balthi_x=-10;
+        }
+        glTranslatef(-5+mey_balthi_x,0,0);
+        mey_with_balthi();
+    glPopMatrix();
+
+
+    glPushMatrix();
+        glRotated(15,10,0,0);
+        glTranslated(5,1,0);     ///hill 1 er pichone tree
+        hill_trees();
+    glPopMatrix();
+
+    glPushMatrix();
+        glTranslated(11,0,0);     ///hill 1 er pichone tree
+        hill_trees();
+    glPopMatrix();
+
+    glPushMatrix();
+        glColor3f(0.49,0.99,0);            /// hill 2
+        glTranslated(-10.3,0,0);
+        hill(10,2);
+    glPopMatrix();
+
+
+    glPushMatrix();
+        glTranslated(19,0,0);     ///hill 1 er pichone tree
+        hill_trees();
+    glPopMatrix();
+
+    glPushMatrix();
+        glColor3f(0.49,0.99,0);           ///hill 3
+        glTranslated(12,0,0);
+        hill(9,2.7);
+    glPopMatrix();
+
+
+
+
+
+    glPushMatrix();
+        glTranslated(26,0,0);     ///hill 3  er pichone tree
+        hill_trees();
+    glPopMatrix();
+
+
+
+    glPushMatrix();
+        glColor3f(0,0.80,0);           ///hill 4
+        glTranslated(5,0,0);
+        hill(7,1.7);
+    glPopMatrix();
+
+
+    glPushMatrix();
+        glTranslated(-1,0,0);     ///hill 1  er samne tree
+        hill_trees();
+    glPopMatrix();
+
+    glPushMatrix();
+        glTranslated(33.5,0,0);     ///hill 5
+        hill_trees();
+    glPopMatrix();
+
+
+    glPushMatrix();        /// mey with haat e kolsi position
+        mey_x+=0.005;
+        if(mey_x>33)
+        {
+            mey_x=-10;
+        }
+        glTranslatef(-15+mey_x,0,0);
+        mey();
+    glPopMatrix();
+
+
+
+    fishing_side();
+
+
+///Fish_position
+
+    glPushMatrix(); ///fish_1_big_left
+        x1-=0.005;
+        if(x1<-19)
+        {
+            x1=9;
+        }
+        glTranslated(x1-9,-1,0);
+        fishBig();
+        glutPostRedisplay();
+    glPopMatrix();
+
+
+    glPushMatrix(); ///fish_2_big_left
+        x2-=0.006;
+        if(x2<-19)
+        {
+            x2=24;
+        }
+        glTranslated(x2-5,-8,0);
+        fishBig();
+    glPopMatrix();
+
+   glPushMatrix(); ///fish_4_small_left
+        x4-=0.009;
+        if(x4<-20)
+        {
+            x4=18;
+        }
+        glTranslated(x4-10,-3,0);
+        glScalef(0.5,0.5,0);
+        fishSmall();
+    glPopMatrix();
+
+    glPushMatrix(); ///fish_3_big_left
+        x3-=0.005;
+        if(x3<-30)
+        {
+            x3=15;
+        }
+        glTranslated(x3-5,-5,0);
+        fishBig();
+    glPopMatrix();
+
+    glPushMatrix(); ///fish_5_small_right
+        x5+=0.003;
+        if(x5>30)
+        {
+            x5=-11;
+        }
+        glTranslated(-11+x5,-7,0);
+        glScalef(0.5,0.5,0);
+        fishRight();
+    glPopMatrix();
+
+   glPushMatrix(); ///fish_6_big_right
+        x6+=0.004;
+        if(x6>30)
+        {
+            x6=-17;
+        }
+        glTranslated(x6-15,-9,0);
+        glScalef(1,1,0);
+        fishRight();
+    glPopMatrix();
+
+
+    glPushMatrix(); ///fish_7_bigger
+        x7+=0.009;
+        if(x7>20)
+        {
+            x7=-17;
+        }
+
+        glTranslated(x7-5,-3.5,0);
+        glScalef(0.75,1.5,0);
+        fishRight();
+    glPopMatrix();
+///end fish position
+
+     glPushMatrix();     ///ship_move_with_shipMan
+        shipLeft-=0.0025;
+        if(shipLeft<-25)
+        {
+            shipLeft=20;
+        }
+        glTranslated(shipLeft,-9.5,0);
+        ship_with_man();
+
+        glutPostRedisplay();
+    glPopMatrix();
+
+
+    glPushMatrix();
+
+        if(couple_x==0)    /// boat stop hoye jabe
+        {
+            glTranslatef(couple_on_ship_x+16,-2,0);
+            ship_without_man();
+            glutPostRedisplay();
+        }
+
+        if(couple_x==1) /// boat move korbe
+        {
+            couple_on_ship_x-=0.010;
+            couple_move_x-=0.010;
+            if(couple_on_ship_x<-23)
+            {
+                couple_on_ship_x=-1.2;
+                couple_move_x=0;
+                couple_move_y=0;
+                couple_x=0;
+            }
+            glTranslatef(couple_on_ship_x+16,-2,0);
+            ship_without_man();
+
+            glutPostRedisplay();
+        }
+
+
+    glPopMatrix();
+
+
+    glPushMatrix(); /// couple position
+        couple();
+    glPopMatrix();
+
+    glPushMatrix();     ///fisher man position
+        glTranslatef(1,-2.5,0);
+        chele();
+    glPopMatrix();
+
+
+
+
+	glFlush();
+}
+
+
+
+void normal_key(unsigned char key, int x, int y)
+{
+	switch (key) {
+
+        case 's': /// get on the ship
+			couple_x=1;
+			glutPostRedisplay();
+			break;
+
+	    default:
+			break;
+	}
+
+}
+
+
+int main()
+{
+	glutInitDisplayMode (GLUT_SINGLE | GLUT_RGB);
+	glutInitWindowSize (1500, 800);
+	glutInitWindowPosition (0,0);
+	glutCreateWindow ("River Side");
+
+	init();
+	glutDisplayFunc(display);
+	//glutKeyboardFunc(my_keyboard);
+   // glutSpecialFunc(spe_key);
+    glutKeyboardFunc(normal_key);
+    //PlaySound("2ndChoice.wav", NULL, SND_FILENAME| SND_ASYNC);
+	glutMainLoop();
+	return 0;
+}
