@@ -1,4 +1,4 @@
-					                        River Side Scenario
+					  River Side Scenario
 
 The name of our project is "River Side Scenario". Some scenario is described here. Here are one couple is present.
  They can take ride if they want. For taking ride, press "s" key  to make the couple ride on the ship.The cloud, 
